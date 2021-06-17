@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { MarketType } from '../redux/currencyReducer'
 
 
 export type ActualCurrenciesType = {
@@ -14,10 +15,13 @@ export type RatesType = {
 }
 
 const instance = axios.create({
-    baseURL: 'localhost:3000/api/v1/',
+    baseURL: 'http://localhost:3000/api/v1/',
+    headers: { 'accept': 'application/json',
+        'Access-Control-Allow-Origin': 'true'
+    }
 })
 
-export const currensiesApi = {
+export const currenciesApi = {
     getActualCurrencies (market: MarketType) {
         return instance.get<ActualCurrenciesType>(`${market}/poll`).then(res => res)
     }
