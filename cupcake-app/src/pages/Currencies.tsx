@@ -2,7 +2,6 @@ import React, {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {subscribeToMarketThunk} from "../redux/currencyReducer";
 import {AppStateType} from "../redux/store";
-import {makeStyles} from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -10,42 +9,75 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Container from '@material-ui/core/Container';
+import { withStyles, Theme, createStyles, makeStyles } from '@material-ui/core/styles'
+import { ErrorMessages } from '../components/ErrorMessages'
 
 const useStyles = makeStyles({
     table: {
-        minWidth: 650,
+        minWidth: 500,
+        maxWidth: 800,
     },
+    container : {
+        maxWidth: 800,
+        marginTop: 24,
+    },
+    activeCell : {
+        backgroundColor: '#cfe8fc'
+    }
 });
+
+const StyledTableRow = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.action.hover,
+      },
+    },
+  }),
+)(TableRow);
 
 export const Currencies: React.FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch()
     const currencies = useSelector((state: AppStateType) => state.currency.currencies)
+    const markets = useSelector((state: AppStateType) => state.currency.markets)
+    const errors = useSelector((state: AppStateType) => state.currency.errors)
     useEffect(() => {
         dispatch(subscribeToMarketThunk('first'))
         dispatch(subscribeToMarketThunk('second'))
         dispatch(subscribeToMarketThunk('third'))
     }, [])
-    // @ts-ignore
     return (
-        <TableContainer component={Paper}>
-            <Table className={classes.table} size="small" aria-label="currencies">
-                <TableHead>
-                    <TableRow>
-                        <TableCell align="right">Pair name / Market</TableCell>
-                        {Object.keys(currencies).map((market) => <TableCell>{market}</TableCell>)}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-
-                    {Object.entries(currencies.first).map(([currency, value]) => (
+        <Container className={classes.container}>
+            <TableContainer component={Paper}>
+                <Table className={classes.table} size="small" aria-label="currencies">
+                    <TableHead>
                         <TableRow>
-                            <TableCell align="right">{currency}</TableCell>
-                            <TableCell align="right">{value}</TableCell>
+                            <TableCell align="left">Pair name / Market</TableCell>
+                            {markets.map((market) => <TableCell key={market} align="center">{market}</TableCell>)}
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                    </TableHead>
+                    <TableBody>
+
+                        {currencies.map((currency) => (
+                            <StyledTableRow key={currency.id}>
+                                <TableCell align="left">{currency.id}</TableCell>
+                                <TableCell align="center"
+                                    className={(currency.first === currency.lowest && currency.lowest !== 0)? classes.activeCell: ''}
+                                >{currency.first}</TableCell>
+                                <TableCell align="center"
+                                    className={(currency.second === currency.lowest && currency.lowest !== 0)? classes.activeCell: ''}
+                                >{currency.second}</TableCell>
+                                <TableCell align="center"
+                                    className={(currency.third === currency.lowest && currency.lowest !== 0)? classes.activeCell: ''}
+                                >{currency.third}</TableCell>
+                            </StyledTableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <ErrorMessages errors={errors} />
+        </Container>
     )
 }
