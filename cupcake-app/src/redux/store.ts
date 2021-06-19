@@ -7,10 +7,9 @@ export type AppStateType = ReturnType<RootReducerType>
 export type InferActionsTypes<T> = T extends {[key: string]: (...args: any[]) => infer U } ? U : never
 
 const rootReducer = combineReducers({
-    currency: currencyReducer,
+    currency: currencyReducer
 })
 
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware))
-// @ts-ignore
-window.__store__ = store
+
 export default store

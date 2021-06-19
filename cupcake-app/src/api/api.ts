@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { MarketType } from '../redux/currencyReducer'
 
-
 export type ActualCurrenciesType = {
   rates: RatesType
   timestamp: number
@@ -16,7 +15,8 @@ export type RatesType = {
 
 const instance = axios.create({
     baseURL: 'http://localhost:3000/api/v1/',
-    headers: { 'accept': 'application/json',
+    headers: {
+        accept: 'application/json',
         'Access-Control-Allow-Origin': 'true'
     }
 })

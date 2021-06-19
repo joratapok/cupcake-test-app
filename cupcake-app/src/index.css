@@ -1,4 +1,6 @@
 body {
+  padding-top: 24px;
+  box-sizing: border-box;
   height: 100vh;
   background-color: rgba(224, 224, 224, 1);
   margin: 0;
